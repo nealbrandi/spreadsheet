@@ -1,34 +1,31 @@
-input {
-    border: none;
-    width: 80px;
-    font-size: 14px;
-    padding: 2px;
-}
-
-input:hover {
-    background-color: #eee;
-}
-
-input:focus {
-    background-color: #ccf;
-}
-
-input:not(:focus) {
-    text-align: right;
-}
-
 table {
-    border-collapse: collapse;  
+    border-collapse: collapse; 
+    table-layout: fixed; 
 }
 
 td {
-    border: 1px solid #999;
-    padding: 0;
+    border: 1px solid rgb(203, 203, 203);
+    font-size: 14px;
+    padding: 1px 3px;
 }
 
 tr:first-child td, td:first-child {
-    background-color: #ccc;
+    border: 1px solid rgb(154, 154, 154);
+    background-color: rgb(246, 246, 246);
+    width: 80px;
     padding: 1px 3px;
     font-weight: bold;
     text-align: center;
+}
+
+table td.selectIndication {
+    background-color: rgb(190, 224, 252);
+}
+
+table td.anchor {
+    border: 2px solid rgb(0, 0, 0);    
+}
+
+table td.selected {
+    background-color: rgb(233, 240, 247);
 }

@@ -9,16 +9,15 @@ export default class App extends Component {
 		super(props);
 
 		this.state = {
-			data: {},
+			model: {},
 			viewDimensions: {
-				columnLabels: [' ', ..._.map(_.range('A'.charCodeAt(0),'Z'.charCodeAt(0)+1), charCode => String.fromCharCode(charCode))],
-				rowCount    : 101
+				columnLabels: ['', ..._.map(_.range('A'.charCodeAt(0),'F'.charCodeAt(0)+1), charCode => String.fromCharCode(charCode))],
+				rowCount    : 12
 			}
 		};
 	}
 
 	render() {
-
-		return <Table viewDimensions={this.state.viewDimensions}/>;
+		return <Table viewDimensions={this.state.viewDimensions} model={this.state.model} />;
 	}
 }
