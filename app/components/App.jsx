@@ -11,7 +11,7 @@ export default class App extends Component {
 		this.state = {
 			model: {},
 			viewDimensions: {
-				columnLabels: ['', ..._.map(_.range('A'.charCodeAt(0),'F'.charCodeAt(0)+1), charCode => String.fromCharCode(charCode))],
+				columnLabels: ['', ..._.map(_.range('A'.charCodeAt(),'F'.charCodeAt()+1), charCode => String.fromCharCode(charCode))],
 				rowCount    : 12
 			}
 		};

@@ -2,7 +2,7 @@ import _ from 'underscore';
 import React from 'react';
 import Cell from './cell.jsx';
 
-export default ({columnLabels, rowCount, model, currentSelection}) => (
+export default ({columnLabels, rowCount, model, selected}) => (
 	<tbody>
 		{
 			_.map(_.range(0, rowCount), row => {
@@ -16,7 +16,7 @@ export default ({columnLabels, rowCount, model, currentSelection}) => (
 										column={column}
 										row={row}
 										model={model}
-										currentSelection={currentSelection} />
+										selected={selected} />
 						}
 					)}
 				</tr>;

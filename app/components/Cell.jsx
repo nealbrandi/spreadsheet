@@ -3,7 +3,7 @@ import React from 'react';
 import classNames from 'classNames'
 
 
-export default ({label, column, row, model, currentSelection}) => {
+export default ({label, column, row, model, selected}) => {
 
 	var id = label + row;
 
@@ -12,9 +12,9 @@ export default ({label, column, row, model, currentSelection}) => {
 	var cellContent = model.hasOwnProperty(id) ? model.id.value : '';
 
 	var classes = classNames({
-		'anchor': isDataCell && currentSelection.anchor && currentSelection.anchor === id,
-		'selected': isDataCell && currentSelection.cells.hasOwnProperty(id),
-		'selectIndication': !isDataCell && showSelectIndication(currentSelection.cells, row, column, label) 
+		'anchor': isDataCell && selected.anchor && selected.anchor === id,
+		'selected': isDataCell && selected.cells.hasOwnProperty(id),
+		'selectIndication': !isDataCell && highlightHeader(selected.cells, row, column, label) 
 	});
 
 	return (
@@ -24,24 +24,16 @@ export default ({label, column, row, model, currentSelection}) => {
 	);
 };
 
-var showSelectIndication = (selectedCells, row, column, label) => {
+var highlightHeader = (selectedCells, row, column, label) => {
 
-	/* Show Header Cell Selection Indication 
-	 * 
-	 *   This function is responsible for setting the selection indication
-	 *   in the column and row headers.  Selection indications are set on
-	 *   header cells when any cell in the column or row is selected.
-	 * 
-	 *   If the label represents a column we attempt to find a cell id    
-	 *   in the selected collection that is prefixed with the header's 
-	 *   label. If it's not a column header it must be a row header and 
-	 *   then look for a cell id with the row number as it's suffix.  
-	 */	
+	// If the label represents a column we attempt to find a cell id    
+	// in the selected collection that is prefixed with the header's 
+	// label. If it's not a column header it must be a row header and 
+	// then look for a cell id with the row number as it's suffix.  
+
+	if (!column && !row) {return false}
 
 	var regex = new RegExp(column ? '^(' + label + ')[0-9]+$' : '^([A-Z]+)(' + row + ')$');
 
-	return _.find(_.keys(selectedCells), id => {
-
-		return regex.test(id);
-	});
+	return _.find(_.keys(selectedCells), id => { return regex.test(id) });
 };
