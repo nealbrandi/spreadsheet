@@ -11,7 +11,8 @@ export default class Table extends Component {
 		this.state = {
 			model: props.model,
 			viewDimensions: props.viewDimensions,
-			selected: {
+			select: {
+				active: false,
 				anchor: undefined,
 				cells: {}
 			}
@@ -33,21 +34,15 @@ export default class Table extends Component {
 	}
 
 	handleMouseDown(e) {
-		this.setState(this.selectTransformer.start(e.target.id));
+		this.setState({ select: this.selectTransformer.startSelection(e.target.id) });
 	}
 
 	handleMouseOver(e) {
-		var newState = this.selectTransformer.extendRange(this.state.selected, e.target.id);
-		if (newState) {
-			this.setState(newState);		
-		}
+		this.setState({ select: this.selectTransformer.extendSelection(this.state.select, e.target.id) });
 	}
 
 	handleMouseUp(e) {
-		var newState = this.selectTransformer.end(this.state.selected, e.target.id);
-		if (newState) {
-			this.setState(newState);		
-		}
+		this.setState({ select: this.selectTransformer.terminateSelection(this.state.select, e.target.id) });
 	}
 
 	handleBlur(e) {
@@ -66,7 +61,7 @@ export default class Table extends Component {
 				<Rows columnLabels={columnLabels} 
 						rowCount={rowCount} 
 						model={this.state.model}
-						selected={this.state.selected}
+						select={this.state.select}
 				/>
 			</table>
 		);

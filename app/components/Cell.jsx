@@ -3,7 +3,7 @@ import React from 'react';
 import classNames from 'classNames'
 
 
-export default ({label, column, row, model, selected}) => {
+export default ({label, column, row, model, select}) => {
 
 	var id = label + row;
 
@@ -12,9 +12,9 @@ export default ({label, column, row, model, selected}) => {
 	var cellContent = model.hasOwnProperty(id) ? model.id.value : '';
 
 	var classes = classNames({
-		'anchor': isDataCell && selected.anchor && selected.anchor === id,
-		'selected': isDataCell && selected.cells.hasOwnProperty(id),
-		'selectIndication': !isDataCell && highlightHeader(selected.cells, row, column, label) 
+		'anchor'          :  isDataCell && select.anchor && select.anchor === id,
+		'selected'        :  isDataCell && select.cells.hasOwnProperty(id),
+		'selectIndication': !isDataCell && highlightHeader(select.cells, row, column, label) 
 	});
 
 	return (
@@ -24,7 +24,7 @@ export default ({label, column, row, model, selected}) => {
 	);
 };
 
-var highlightHeader = (selectedCells, row, column, label) => {
+var highlightHeader = (cells, row, column, label) => {
 
 	// If the label represents a column we attempt to find a cell id    
 	// in the selected collection that is prefixed with the header's 
@@ -35,5 +35,5 @@ var highlightHeader = (selectedCells, row, column, label) => {
 
 	var regex = new RegExp(column ? '^(' + label + ')[0-9]+$' : '^([A-Z]+)(' + row + ')$');
 
-	return _.find(_.keys(selectedCells), id => { return regex.test(id) });
+	return _.find(_.keys(cells), id => { return regex.test(id) });
 };
