@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import React, { Component } from 'react';
 import Table from './table.jsx';
 
@@ -11,8 +10,8 @@ export default class App extends Component {
 		this.state = {
 			model: {},
 			viewDimensions: {
-				columnLabels: ['', ..._.map(_.range('A'.charCodeAt(),'F'.charCodeAt()+1), charCode => String.fromCharCode(charCode))],
-				rowCount    : 12
+				columnCount: 5,
+				rowCount   : 5
 			}
 		};
 	}

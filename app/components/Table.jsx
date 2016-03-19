@@ -34,15 +34,33 @@ export default class Table extends Component {
 	}
 
 	handleMouseDown(e) {
-		this.setState({ select: this.selectTransformer.startSelection(e.target.id) });
+
+		if (e.target !== e.currentTarget) {
+
+			this.setState({ select: this.selectTransformer.startRange(e.target.id) });
+		}
+
+		e.stopPropagation();
 	}
 
 	handleMouseOver(e) {
-		this.setState({ select: this.selectTransformer.extendSelection(this.state.select, e.target.id) });
+
+		if (e.target !== e.currentTarget) {
+
+			this.setState({ select: this.selectTransformer.extendRange(this.state.select, e.target.id) });
+		}
+
+		e.stopPropagation();
 	}
 
 	handleMouseUp(e) {
-		this.setState({ select: this.selectTransformer.terminateSelection(this.state.select, e.target.id) });
+
+		if (e.target !== e.currentTarget) {
+
+			this.setState({ select: this.selectTransformer.terminateRange(this.state.select, e.target.id) });
+		}
+
+		e.stopPropagation();
 	}
 
 	handleBlur(e) {
@@ -51,15 +69,12 @@ export default class Table extends Component {
 
 	render() {
 
-		const { columnLabels, rowCount } = this.props.viewDimensions;
-		
 		return (
 			<table onMouseDown={this.handleMouseDown} 
 					onMouseOver={this.handleMouseOver} 
 					onMouseUp={this.handleMouseUp} 
 			>
-				<Rows columnLabels={columnLabels} 
-						rowCount={rowCount} 
+				<Rows viewDimensions={this.state.viewDimensions} 
 						model={this.state.model}
 						select={this.state.select}
 				/>

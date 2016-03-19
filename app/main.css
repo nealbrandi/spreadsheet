@@ -3,6 +3,11 @@ table {
     table-layout: fixed; 
 }
 
+table * {
+    -webkit-user-select: none; 
+    user-select: none; 
+}
+
 td {
     border: 1px solid rgb(203, 203, 203);
     font-size: 14px;

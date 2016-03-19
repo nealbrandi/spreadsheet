@@ -1,24 +1,22 @@
-import _ from 'underscore';
 import React from 'react';
 import Cell from './cell.jsx';
 
-export default ({columnLabels, rowCount, model, select}) => (
+export default ({viewDimensions, model, select}) => (
 	<tbody>
 		{
-			_.map(_.range(0, rowCount), row => {
+			Array(viewDimensions.rowCount + 1).fill().map((_, row) => {
 
 				return <tr key={row} >
 					{
-						_.map(columnLabels, (label, column) => {
+						Array(viewDimensions.columnCount + 1).fill().map((_, column) => {
 
-							return <Cell key={label + row} 
-										label={label}
+							return <Cell key={column + '-' + row} 
 										column={column}
 										row={row}
 										model={model}
 										select={select} />
-						}
-					)}
+						})
+					}
 				</tr>;
 			})
 		}

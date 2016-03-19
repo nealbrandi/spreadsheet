@@ -1,5 +1,3 @@
-import _ from 'underscore';
-
 export default class SelectTransformer {
 
 	constructor(viewDimensions) {
@@ -7,124 +5,87 @@ export default class SelectTransformer {
 		this.viewDimensions = viewDimensions;
 	}
 
-	startSelection(cellId) {
+	startRange(cellId) {
 
-		return {
+		var newState = {
 			active: true,
-			anchor: this.cellIdToCoordinates(cellId), 
-			cells: {
-				[cellId]: true
-			}
+			anchor: cellId, 
+			cells: {}
 		};
+
+		return this.selectRange(newState, cellId);
 	}
 
-	extendSelection(currentState, cellId) {
+	extendRange(currentState, cellId) {
 
 		if (!currentState.active) {
 
 			return currentState;
 		}
 
-		var anchor = currentState.anchor.label + currentState.anchor.row;
- 
-		var newState = {
-			active: true,
-			anchor: currentState.anchor, 
-			cells: {
-				[anchor]: true
-			}
-		};
+		var newState = Object.assign({}, currentState);
 
-		var boundry = this.cellIdToCoordinates(cellId);
-
-		// Adjust the selected cells dictionary based on the boundry cell's type:
-		//   - Column Header: Add all cells in the column
-		//   - Row Header   : Add all cells in the row
-		//   - Data Cell    : Add all cells between anchor and boundry
-
-		if (boundry.label && !boundry.row) {
-
-			this.selectColumn(boundry.label, newState.cells);
-		}
-		else if (!boundry.label && boundry.row) {
-
-			this.selectRow(boundry.row, newState.cells);
-		}
-		else {
-
-			this.selectRange(newState.anchor, boundry, newState.cells);
-		}
-
-		return newState;
+		return this.selectRange(newState, cellId);
 	}
 
-	terminateSelection(currentState, cellId) {
+	terminateRange(currentState, cellId) {
 
-		var newState = this.extendSelection(currentState, cellId);
+		var newState = this.extendRange(currentState, cellId);
 
 		newState.active = false;
 
 		return newState;
 	}
 
-	cellIdToCoordinates(cellId) {
+	selectRange(newState, cellId) {
 
-		var identityElements = cellId.match('^([A-Z]*)([0-9]+)$');
+		var anchor = this.cellIdToCoordinate(newState.anchor);
+
+		var boundry = this.cellIdToCoordinate(cellId);
+
+		if (anchor.column && !anchor.row) {
+
+			boundry.row = this.viewDimensions.rowCount + 1;
+		}
+		else if (!anchor.column && anchor.row) {
+
+			boundry.column = this.viewDimensions.columnCount + 1;
+		}
+
+		newState.cells = {};
+
+		this.range(anchor.row, boundry.row).forEach(row => {
+		
+			this.range(anchor.column, boundry.column).forEach(column => {
+
+				newState.cells[this.coordinatePointsToCellId(column, row)] = true;
+			});
+
+		});
+
+		return newState;
+	}
+
+	cellIdToCoordinate(cellId) {
+
+		var coordinatePoints = cellId.split('-');
 
 		return {
-			label: identityElements[1],
-			row: + identityElements[2]
+			column: + coordinatePoints[0],
+			row: + coordinatePoints[1]
 		}
 	}
 
-	selectColumn(label, cells) {
+	coordinatePointsToCellId(column, row) {
 
-		var rows = _.range(1, this.viewDimensions.rowCount);
-
-		rows.forEach(row => {
-
-			cells[label + row] = true;
-		});
+		return column + '-' + row;
 	}
 
-	selectRow(row, cells) {
+	range(start, stop) {
 
-		var labels = this.viewDimensions.columnLabels.slice(1);
+		var low = Math.min(start, stop);
+		var high = Math.max(start, stop) + 1;
 
-		labels.forEach(label => {
-
-			cells[label + row] = true;
-		});
-	}
-
-	selectRange(anchor, boundry, cells) {
-
-		var labels = this.deriveColumnRange(anchor, boundry);
-
-		var rows = this.deriveRowRange(anchor, boundry); 
-
-		rows.forEach(row => {
-
-			labels.forEach(label => {
-
-				cells[label + row] = true;
-			});
-		});	
-	}
-
-	deriveRowRange(anchor, boundry) {
-
-		return _.range(anchor.row, boundry.row + 1, anchor.row > boundry.row ? -1 : 1);
-	}
-
-	deriveColumnRange(anchor, boundry) {
-
-		var anchorCode = anchor.label.charCodeAt();
-
-		var boundryCode = boundry.label.charCodeAt();
-
-		var codes = _.range(Math.min(anchorCode, boundryCode), Math.max(anchorCode, boundryCode) + 1);
-
-		return codes.map(code => String.fromCharCode(code));
+		return Array(high - low).fill().map((_, i) => i + low);		
 	}
 }
