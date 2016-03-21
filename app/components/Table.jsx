@@ -14,12 +14,16 @@ export default class Table extends Component {
 			select: {
 				active: false,
 				anchor: undefined,
-				cells: {}
+				rowRange: undefined,
+				columnRange: undefined
 			}
 		};
 
-		this.selectTransformer = new SelectTransformer(this.state.viewDimensions);
+		this.selectTransformer = new SelectTransformer();
+		//this.mergeTransformer = new MergeTransformer();
+		// - Add select row and column ranges to viewDimensions.mergedBlock
 
+		this.handleBlur = this.handleBlur.bind(this);
 		this.handleMouseDown = this.handleMouseDown.bind(this);
 		this.handleMouseOver = this.handleMouseOver.bind(this);
 		this.handleMouseUp = this.handleMouseUp.bind(this);
@@ -37,7 +41,7 @@ export default class Table extends Component {
 
 		if (e.target !== e.currentTarget) {
 
-			this.setState({ select: this.selectTransformer.startRange(e.target.id) });
+			this.setState({ select: this.selectTransformer.startRange(this.state, e.target.id) });
 		}
 
 		e.stopPropagation();
@@ -47,7 +51,7 @@ export default class Table extends Component {
 
 		if (e.target !== e.currentTarget) {
 
-			this.setState({ select: this.selectTransformer.extendRange(this.state.select, e.target.id) });
+			this.setState({ select: this.selectTransformer.extendRange(this.state, e.target.id) });
 		}
 
 		e.stopPropagation();
@@ -57,28 +61,32 @@ export default class Table extends Component {
 
 		if (e.target !== e.currentTarget) {
 
-			this.setState({ select: this.selectTransformer.terminateRange(this.state.select, e.target.id) });
+			this.setState({ select: this.selectTransformer.terminateRange(this.state, e.target.id) });
 		}
 
 		e.stopPropagation();
 	}
 
 	handleBlur(e) {
+
 		console.log(e.type, ' - ', e.target.nodeName, ' - ', e.target.id);
 	}
 
 	render() {
 
 		return (
-			<table onMouseDown={this.handleMouseDown} 
-					onMouseOver={this.handleMouseOver} 
-					onMouseUp={this.handleMouseUp} 
-			>
-				<Rows viewDimensions={this.state.viewDimensions} 
-						model={this.state.model}
-						select={this.state.select}
-				/>
-			</table>
+			<div>
+				<button disabled={!this.state.select.anchor}>Merge Cells</button>
+				<table 	onMouseDown={this.handleMouseDown} 
+						onMouseOver={this.handleMouseOver} 
+						onMouseUp={this.handleMouseUp} 
+				>
+					<Rows	model={this.state.model}
+							viewDimensions={this.state.viewDimensions} 
+							select={this.state.select}
+					/>
+				</table>
+			</div>
 		);
 	}
 }

@@ -10,11 +10,15 @@ export default ({viewDimensions, model, select}) => (
 					{
 						Array(viewDimensions.columnCount + 1).fill().map((_, column) => {
 
-							return <Cell key={column + '-' + row} 
-										column={column}
-										row={row}
-										model={model}
-										select={select} />
+							if (renderCell(viewDimensions.mergeGroups, row, column)) {
+
+								return <Cell key={column + '-' + row} 
+											column={column}
+											row={row}
+											model={model}
+											mergeGroups={viewDimensions.mergeGroups}
+											select={select} />
+							}
 						})
 					}
 				</tr>;
@@ -22,3 +26,17 @@ export default ({viewDimensions, model, select}) => (
 		}
 	</tbody>
 );
+
+var renderCell = (mergeGroups, row, column) => {
+
+	mergeGroups.forEach(group => {
+
+		if ((row    >= group.rowRange.low    || row    <= group.rowRange.high) ||
+			(column >= group.columnRange.low || column <= group.columnRange.high)) {
+
+			return false;
+		}
+	});
+
+	return true;
+} 

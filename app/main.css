@@ -23,7 +23,7 @@ tr:first-child td, td:first-child {
     text-align: center;
 }
 
-table td.selectIndication {
+table td.highlight {
     background-color: rgb(190, 224, 252);
 }
 

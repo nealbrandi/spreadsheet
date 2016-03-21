@@ -1,24 +1,25 @@
-import _ from 'underscore';
 import React from 'react';
 import classNames from 'classNames'
 
 
 export default ({column, row, model, select}) => {
 
-	var id = column + '-' + row;
+	var tableSelected = select.anchor === '0-0';
+
+	var cellId = column + '-' + row;
 
 	var isDataCell = row && column;
 
-	var cellContent = model.hasOwnProperty(id) ? model.id.value : '';
+	var cellContent = model.hasOwnProperty(cellId) ? model.cellId.value : '';
 
 	var classes = classNames({
-		'anchor'          :  isDataCell && select.anchor && select.anchor === id,
-		'selected'        :  isDataCell && select.cells.hasOwnProperty(id),
-		'selectIndication': !isDataCell && highlightHeader(select.cells, row, column) 
+		'anchor'   :  isDataCell && select.anchor  && select.anchor === cellId,
+		'selected' :  isDataCell && (tableSelected || cellInRange(select, row, column)),
+		'highlight': !isDataCell && (tableSelected || highlight(select, row, column)) 
 	});
 
 	return (
-		<td key={id} id={id} className={classes} >
+		<td key={cellId} id={cellId} className={classes}>
 			{row && column ? cellContent : row || columnToLetter(column)}
 		</td>
 	);
@@ -41,11 +42,15 @@ var columnToLetter = (column) => {
     return letter === '@' ? '' : letter;
 }
 
-var highlightHeader = (cells, row, column) => {
+var cellInRange = (select, row, column) => {
 
-	if (!column && !row) {return false}
+	return	(select.rowRange	&& (row    >= select.rowRange.low    && row    <= select.rowRange.high)) &&
+			(select.columnRange && (column >= select.columnRange.low && column <= select.columnRange.high));
+} 
 
-	var regex = new RegExp(column ? '^(' + column + ')-[0-9]+$' : '^([0-9]+)-(' + row + ')$');
+var highlight = (select, row, column) => {
 
-	return _.find(_.keys(cells), id => { return regex.test(id) });
+	return	(!column || !row)	&&
+			((select.rowRange	&& (row    >= select.rowRange.low    && row    <= select.rowRange.high)) ||
+			(select.columnRange	&& (column >= select.columnRange.low && column <= select.columnRange.high)));
 };

@@ -1,69 +1,78 @@
 export default class SelectTransformer {
 
-	constructor(viewDimensions) {
+	startRange(currentState, cellId) {
 
-		this.viewDimensions = viewDimensions;
-	}
+		const { model, viewDimensions } = currentState;
 
-	startRange(cellId) {
-
-		var newState = {
-			active: true,
-			anchor: cellId, 
-			cells: {}
+		var newSelect = {
+			anchor: cellId 
 		};
 
-		return this.selectRange(newState, cellId);
+		if (cellId === '0-0') {
+
+			newSelect.active = false;
+
+			newSelect.rowRange = {
+				low: 0,
+				high: viewDimensions.rowCount + 1
+			};
+
+			newSelect.columnRange = {
+				low: 0,
+				high: viewDimensions.columnCount + 1
+			};
+
+			return newSelect;
+		}
+
+		newSelect.active = true;
+
+		return this.selectRange(model, viewDimensions, newSelect, cellId);
 	}
 
 	extendRange(currentState, cellId) {
 
-		if (!currentState.active) {
+		const { model, viewDimensions, select } = currentState;
 
-			return currentState;
+		if (!select.active) {
+
+			return select;
 		}
 
-		var newState = Object.assign({}, currentState);
+		var newSelect = Object.assign({}, select);
 
-		return this.selectRange(newState, cellId);
+		return this.selectRange(model, viewDimensions, newSelect, cellId);
 	}
 
 	terminateRange(currentState, cellId) {
 
-		var newState = this.extendRange(currentState, cellId);
+		var newSelect = this.extendRange(currentState, cellId);
 
-		newState.active = false;
+		newSelect.active = false;
 
-		return newState;
+		return newSelect;
 	}
 
-	selectRange(newState, cellId) {
+	selectRange(model, viewDimensions, select, cellId) {
 
-		var anchor = this.cellIdToCoordinate(newState.anchor);
+		var anchor = this.cellIdToCoordinate(select.anchor);
 
 		var boundry = this.cellIdToCoordinate(cellId);
 
 		if (anchor.column && !anchor.row) {
 
-			boundry.row = this.viewDimensions.rowCount + 1;
+			boundry.row = viewDimensions.rowCount + 1;
 		}
 		else if (!anchor.column && anchor.row) {
 
-			boundry.column = this.viewDimensions.columnCount + 1;
+			boundry.column = viewDimensions.columnCount + 1;
 		}
 
-		newState.cells = {};
+		select.rowRange    = this.range(anchor.row, boundry.row);
 
-		this.range(anchor.row, boundry.row).forEach(row => {
-		
-			this.range(anchor.column, boundry.column).forEach(column => {
+		select.columnRange = this.range(anchor.column, boundry.column);
 
-				newState.cells[this.coordinatePointsToCellId(column, row)] = true;
-			});
-
-		});
-
-		return newState;
+		return select;
 	}
 
 	cellIdToCoordinate(cellId) {
@@ -76,16 +85,11 @@ export default class SelectTransformer {
 		}
 	}
 
-	coordinatePointsToCellId(column, row) {
-
-		return column + '-' + row;
-	}
-
 	range(start, stop) {
 
-		var low = Math.min(start, stop);
-		var high = Math.max(start, stop) + 1;
-
-		return Array(high - low).fill().map((_, i) => i + low);		
+		return {
+			low : Math.min(start, stop),
+			high: Math.max(start, stop)
+		};		
 	}
 }

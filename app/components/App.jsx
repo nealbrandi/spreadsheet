@@ -11,7 +11,8 @@ export default class App extends Component {
 			model: {},
 			viewDimensions: {
 				columnCount: 5,
-				rowCount   : 5
+				rowCount: 5,
+				mergeGroups: []
 			}
 		};
 	}

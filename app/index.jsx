@@ -5,4 +5,4 @@ import App from './components/App.jsx';
 import './main.css';
 
 
-ReactDOM.render(<App />, document.getElementById('spreadsheet'));
+ReactDOM.render(<App />, document.getElementById('table'));
