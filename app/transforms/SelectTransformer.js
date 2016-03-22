@@ -1,3 +1,5 @@
+import CellGroup from '../util/cellGroup.js';
+
 export default class SelectTransformer {
 
 	startRange(currentState, cellId) {
@@ -5,6 +7,7 @@ export default class SelectTransformer {
 		const { model, viewDimensions } = currentState;
 
 		var newSelect = {
+
 			anchor: cellId 
 		};
 
@@ -13,12 +16,12 @@ export default class SelectTransformer {
 			newSelect.active = false;
 
 			newSelect.rowRange = {
-				low: 0,
+				low: 1,
 				high: viewDimensions.rowCount + 1
 			};
 
 			newSelect.columnRange = {
-				low: 0,
+				low: 1,
 				high: viewDimensions.columnCount + 1
 			};
 
@@ -68,9 +71,7 @@ export default class SelectTransformer {
 			boundry.column = viewDimensions.columnCount + 1;
 		}
 
-		select.rowRange    = this.range(anchor.row, boundry.row);
-
-		select.columnRange = this.range(anchor.column, boundry.column);
+		select.cellGroup = new CellGroup(anchor.row, boundry.row, anchor.column, boundry.column);
 
 		return select;
 	}
@@ -81,15 +82,7 @@ export default class SelectTransformer {
 
 		return {
 			column: + coordinatePoints[0],
-			row: + coordinatePoints[1]
+			row   : + coordinatePoints[1]
 		}
-	}
-
-	range(start, stop) {
-
-		return {
-			low : Math.min(start, stop),
-			high: Math.max(start, stop)
-		};		
 	}
 }

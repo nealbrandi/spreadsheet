@@ -31,10 +31,9 @@ var renderCell = (mergeGroups, row, column) => {
 
 	mergeGroups.forEach(group => {
 
-		if ((row    >= group.rowRange.low    || row    <= group.rowRange.high) ||
-			(column >= group.columnRange.low || column <= group.columnRange.high)) {
+		if (group.contains(row, column)) {
 
-			return false;
+			return group.isTopLeftCell(row, column);
 		}
 	});
 
